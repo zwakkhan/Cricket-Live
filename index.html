@@ -1,491 +1,844 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Afghanistan Live TV</title>
-
-<style>
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-html {
-    scroll-behavior: smooth;
-}
-
-body {
-    background: #000;
-    color: #fff;
-    font-family: Arial, sans-serif;
-    overflow-x: hidden;
-}
-
-/* HEADER */
-
-.header {
-    height: 60px;
-    background: #080808;
-    border-bottom: 1px solid #222;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    padding: 0 15px;
-
-    position: sticky;
-    top: 0;
-    z-index: 999;
-}
-
-.logo {
-    font-size: 21px;
-    font-weight: bold;
-}
-
-.live-status {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-
-    font-size: 13px;
-}
-
-.live-dot {
-    width: 9px;
-    height: 9px;
-
-    background: red;
-    border-radius: 50%;
-
-    box-shadow: 0 0 8px red;
-}
-
-/* FEED */
-
-.feed {
-    width: 100%;
-    max-width: 700px;
-    margin: auto;
-}
-
-/* TV CARD */
-
-.tv-card {
-    background: #050505;
-    border-bottom: 8px solid #111;
-    padding-bottom: 18px;
-}
-
-/* CHANNEL NAME */
-
-.channel-name {
-    direction: ltr;
-    text-align: left;
-
-    padding: 15px 14px 10px;
-
-    font-size: 20px;
-    font-weight: 900;
-}
-
-/* VIDEO BOX */
-
-.video-box {
-    position: relative;
-
-    width: 100%;
-    aspect-ratio: 16 / 9;
-
-    background: #111;
-
-    overflow: hidden;
-}
-
-/* VIDEO */
-
-.video-box video {
-    width: 100%;
-    height: 100%;
-
-    display: block;
-
-    background: #000;
-
-    object-fit: contain;
-}
-
-/* PLAY SCREEN */
-
-.play-screen {
-    position: absolute;
-
-    inset: 0;
-
-    background:
-        linear-gradient(
-            rgba(0,0,0,.35),
-            rgba(0,0,0,.55)
-        );
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    z-index: 5;
-
-    cursor: pointer;
-}
-
-/* PLAY BUTTON */
-
-.play-button {
-    width: 75px;
-    height: 75px;
-
-    border-radius: 50%;
-
-    border: none;
-
-    background: #e50914;
-
-    color: white;
-
-    font-size: 30px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding-left: 5px;
-
-    cursor: pointer;
-
-    box-shadow: 0 5px 25px rgba(0,0,0,.7);
-
-    transition: .2s;
-}
-
-.play-button:hover {
-    transform: scale(1.08);
-}
-
-/* LIVE LABEL */
-
-.live-label {
-    position: absolute;
-
-    top: 10px;
-    left: 10px;
-
-    z-index: 10;
-
-    background: #e50914;
-
-    color: white;
-
-    padding: 5px 9px;
-
-    border-radius: 4px;
-
-    font-size: 12px;
-    font-weight: bold;
-}
-
-/* DESCRIPTION */
-
-.description {
-    direction: ltr;
-    text-align: left;
-
-    padding: 10px 14px 0;
-
-    color: #aaa;
-
-    font-size: 13px;
-}
-
-/* MOBILE */
-
-@media (max-width: 600px) {
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Live TV</title>
+
+  <!-- HLS Player -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #000;
+      color: #fff;
+    }
+
+    /* Header */
     .header {
-        height: 56px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      height: 65px;
+      background: #000;
+      border-bottom: 1px solid #292929;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0 15px;
     }
 
     .logo {
-        font-size: 18px;
+      font-size: 23px;
+      font-weight: bold;
+      color: #fff;
+      white-space: nowrap;
     }
 
-    .channel-name {
-        font-size: 18px;
-        padding: 13px 12px 9px;
+    /* Search */
+    .search-box {
+      width: 230px;
     }
 
+    .search-box input {
+      width: 100%;
+      background: #1c1c1c;
+      color: #fff;
+      border: 1px solid #333;
+      outline: none;
+
+      padding: 10px 15px;
+      border-radius: 22px;
+
+      font-size: 14px;
+    }
+
+    .search-box input::placeholder {
+      color: #aaa;
+    }
+
+    /* Main */
+    .container {
+      width: 100%;
+      max-width: 650px;
+      margin: 20px auto;
+      padding: 0 10px;
+    }
+
+    /* TV Post */
+    .post {
+      background: #111;
+      border: 1px solid #292929;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    /* TV Header */
+    .post-header {
+      display: flex;
+      align-items: center;
+      padding: 14px;
+    }
+
+    .avatar {
+      width: 45px;
+      height: 45px;
+
+      background: #222;
+      color: #fff;
+
+      border-radius: 50%;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    .post-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .live {
+      color: #ff3030;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    /* Video */
+    .video-box {
+      width: 100%;
+      background: #000;
+    }
+
+    video {
+      width: 100%;
+      display: block;
+      background: #000;
+      aspect-ratio: 16 / 9;
+    }
+
+    /* Play Button */
     .play-button {
-        width: 65px;
-        height: 65px;
-        font-size: 26px;
+      display: block;
+
+      width: calc(100% - 30px);
+      margin: 15px;
+
+      padding: 12px;
+
+      border: 1px solid #444;
+      border-radius: 7px;
+
+      background: #000;
+      color: #fff;
+
+      font-size: 15px;
+      font-weight: bold;
+
+      cursor: pointer;
     }
 
-}
+    .play-button:hover {
+      background: #222;
+    }
 
-</style>
+    /* Like Section */
+    .actions {
+      border-top: 1px solid #292929;
+
+      display: flex;
+      align-items: center;
+
+      padding: 10px 15px;
+    }
+
+    .like-button {
+      background: transparent;
+      border: none;
+
+      color: #fff;
+
+      font-size: 15px;
+      font-weight: bold;
+
+      cursor: pointer;
+
+      padding: 7px 12px;
+      border-radius: 6px;
+    }
+
+    .like-button:hover {
+      background: #222;
+    }
+
+    .like-button.liked {
+      color: #1877f2;
+    }
+
+    .like-count {
+      color: #aaa;
+      margin-left: 5px;
+      font-size: 14px;
+    }
+
+    /* No Results */
+    .no-results {
+      display: none;
+
+      text-align: center;
+      padding: 40px 10px;
+
+      color: #aaa;
+      font-size: 16px;
+    }
+
+    /* Bottom space */
+    .footer-space {
+      height: 150px;
+    }
+
+    /* Mobile */
+    @media (max-width: 600px) {
+
+      .header {
+        height: auto;
+        min-height: 65px;
+
+        padding: 10px;
+
+        gap: 10px;
+      }
+
+      .logo {
+        font-size: 19px;
+      }
+
+      .search-box {
+        width: 180px;
+      }
+
+      .container {
+        margin-top: 10px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-
-<!-- HEADER -->
-
-<header class="header">
+  <!-- Header -->
+  <header class="header">
 
     <div class="logo">
-        WADAN NEWS
+      Live TV
     </div>
 
-    <div class="live-status">
-
-        <span class="live-dot"></span>
-
-        LIVE
-
+    <div class="search-box">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search TV..."
+        oninput="searchTV()"
+      >
     </div>
 
-</header>
+  </header>
 
 
+  <!-- Main -->
+  <main class="container">
 
-<main class="feed">
+    <!-- ========================= -->
+    <!-- ARIANA TV -->
+    <!-- ========================= -->
 
+    <div class="post tv-post" data-name="Ariana TV">
 
-<!-- ================================================= -->
-<!-- AF SPORTS -->
-<!-- ================================================= -->
+      <div class="post-header">
 
-<section class="tv-card">
-
-    <h2 class="channel-name">
-        AF SPORTS
-    </h2>
-
-    <div class="video-box">
-
-        <span class="live-label">
-            LIVE
-        </span>
-
-        <video
-            controls
-            playsinline
-            preload="none"
-            poster=""
-        ></video>
-
-        <div class="play-screen">
-
-            <button class="play-button">
-                ▶
-            </button>
-
+        <div class="avatar">
+          AT
         </div>
 
-    </div>
+        <div>
+          <div class="post-title">
+            Ariana TV
+          </div>
 
-    <div class="description">
-        AF SPORTS • LIVE TV
-    </div>
-
-</section>
-
-
-
-<!-- ================================================= -->
-<!-- TOLO NEWS -->
-<!-- ================================================= -->
-
-<section class="tv-card">
-
-    <h2 class="channel-name">
-        TOLO NEWS
-    </h2>
-
-    <div class="video-box">
-
-        <span class="live-label">
-            LIVE
-        </span>
-
-        <video
-            controls
-            playsinline
-            preload="none"
-        ></video>
-
-        <div class="play-screen">
-
-            <button class="play-button">
-                ▶
-            </button>
-
+          <div class="live">
+            🔴 LIVE
+          </div>
         </div>
 
-    </div>
-
-    <div class="description">
-        TOLO NEWS • LIVE TV
-    </div>
-
-</section>
+      </div>
 
 
-
-<!-- ================================================= -->
-<!-- TOLO TV -->
-<!-- ================================================= -->
-
-<section class="tv-card">
-
-    <h2 class="channel-name">
-        TOLO TV
-    </h2>
-
-    <div class="video-box">
-
-        <span class="live-label">
-            LIVE
-        </span>
+      <div class="video-box">
 
         <video
-            controls
-            playsinline
-            preload="none"
-        ></video>
+          id="video1"
+          controls
+          playsinline
+          preload="none">
+        </video>
 
-        <div class="play-screen">
-
-            <button class="play-button">
-                ▶
-            </button>
-
-        </div>
-
-    </div>
-
-    <div class="description">
-        TOLO TV • LIVE TV
-    </div>
-
-</section>
+      </div>
 
 
+      <button
+        class="play-button"
+        onclick="playTV(1, 'https://tgn.bozztv.com/eshgtv-dvrfl05/gin-ariana/index.m3u8')">
 
-<!-- ================================================= -->
-<!-- LEMAR TV -->
-<!-- ================================================= -->
+        ▶ Play Ariana TV
 
-<section class="tv-card">
+      </button>
 
-    <h2 class="channel-name">
-        LEMAR TV
-    </h2>
 
-    <div class="video-box">
+      <div class="actions">
 
-        <span class="live-label">
-            LIVE
+        <button
+          class="like-button"
+          id="likeButton1"
+          onclick="likeTV(1)">
+
+          👍 Like
+
+        </button>
+
+        <span
+          class="like-count"
+          id="likeCount1">
+
+          0
+
         </span>
 
-        <video
-            controls
-            playsinline
-            preload="none"
-        ></video>
+      </div>
 
-        <div class="play-screen">
+    </div>
 
-            <button class="play-button">
-                ▶
-            </button>
 
+
+    <!-- ========================= -->
+    <!-- ARIANA NEWS -->
+    <!-- ========================= -->
+
+    <div class="post tv-post" data-name="Ariana News ATN News">
+
+      <div class="post-header">
+
+        <div class="avatar">
+          AN
         </div>
 
+        <div>
+          <div class="post-title">
+            Ariana NEWS
+          </div>
+
+          <div class="live">
+            🔴 LIVE
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="video-box">
+
+        <video
+          id="video2"
+          controls
+          playsinline
+          preload="none">
+        </video>
+
+      </div>
+
+
+      <button
+        class="play-button"
+        onclick="playTV(2, 'https://eshgh.tv/channel.php?cid=882')">
+
+        ▶ Play Ariana NEWS
+
+      </button>
+
+
+      <div class="actions">
+
+        <button
+          class="like-button"
+          id="likeButton2"
+          onclick="likeTV(2)">
+
+          👍 Like
+
+        </button>
+
+        <span
+          class="like-count"
+          id="likeCount2">
+
+          0
+
+        </span>
+
+      </div>
+
     </div>
 
-    <div class="description">
-        LEMAR TV • LIVE TV
+
+
+    <!-- ========================= -->
+    <!-- TOLO TV -->
+    <!-- ========================= -->
+
+    <div class="post tv-post" data-name="Tolo TV Tolo HD">
+
+      <div class="post-header">
+
+        <div class="avatar">
+          TT
+        </div>
+
+        <div>
+          <div class="post-title">
+            TOLO TV
+          </div>
+
+          <div class="live">
+            🔴 LIVE
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="video-box">
+
+        <video
+          id="video3"
+          controls
+          playsinline
+          preload="none">
+        </video>
+
+      </div>
+
+
+      <button
+        class="play-button"
+        onclick="playTV(3, 'https://eshgh.tv/channel.php?cid=887')">
+
+        ▶ Play TOLO TV
+
+      </button>
+
+
+      <div class="actions">
+
+        <button
+          class="like-button"
+          id="likeButton3"
+          onclick="likeTV(3)">
+
+          👍 Like
+
+        </button>
+
+        <span
+          class="like-count"
+          id="likeCount3">
+
+          0
+
+        </span>
+
+      </div>
+
     </div>
 
-</section>
 
 
-</main>
+    <!-- ========================= -->
+    <!-- TOLO NEWS -->
+    <!-- ========================= -->
+
+    <div class="post tv-post" data-name="Tolo News">
+
+      <div class="post-header">
+
+        <div class="avatar">
+          TN
+        </div>
+
+        <div>
+          <div class="post-title">
+            Tolo NEWS
+          </div>
+
+          <div class="live">
+            🔴 LIVE
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="video-box">
+
+        <video
+          id="video4"
+          controls
+          playsinline
+          preload="none">
+        </video>
+
+      </div>
+
+
+      <button
+        class="play-button"
+        onclick="playTV(4, 'https://share.google/Uq1N0NPWQveyuWwLA')">
+
+        ▶ Play Tolo NEWS
+
+      </button>
+
+
+      <div class="actions">
+
+        <button
+          class="like-button"
+          id="likeButton4"
+          onclick="likeTV(4)">
+
+          👍 Like
+
+        </button>
+
+        <span
+          class="like-count"
+          id="likeCount4">
+
+          0
+
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- No Search Results -->
+    <div
+      class="no-results"
+      id="noResults">
+
+      No TV channel found.
+
+    </div>
+
+
+    <div class="footer-space"></div>
+
+  </main>
 
 
 
-<script>
+  <script>
 
-/*
-====================================================
-هر تلویزیون جداگانه Play می‌شود
-====================================================
-*/
+    /* ===================================
+       HLS PLAYERS
+    =================================== */
 
-const tvBoxes = document.querySelectorAll(".video-box");
+    const players = {};
 
 
-tvBoxes.forEach(function(box) {
+    function playTV(id, url) {
 
-    const video = box.querySelector("video");
-    const playScreen = box.querySelector(".play-screen");
-    const playButton = box.querySelector(".play-button");
-
-
-    playScreen.addEventListener("click", function() {
-
-        /*
-        فقط همین تلویزیون Play می‌شود
-        */
-
-        video.play();
-
-        playScreen.style.display = "none";
-
-    });
+      const video =
+        document.getElementById("video" + id);
 
 
-    /*
-    وقتی ویدیو متوقف شد،
-    دکمه Play دوباره ظاهر می‌شود.
-    */
+      /* Stop other videos */
 
-    video.addEventListener("pause", function() {
+      document.querySelectorAll("video").forEach(function(v) {
 
-        playScreen.style.display = "flex";
+        if (v !== video) {
+          v.pause();
+        }
 
-    });
+      });
 
 
-    /*
-    وقتی Play شد،
-    صفحه Play مخفی می‌شود.
-    */
+      /* Destroy old HLS player */
 
-    video.addEventListener("play", function() {
+      if (players[id]) {
 
-        playScreen.style.display = "none";
+        players[id].destroy();
 
-    });
+        players[id] = null;
 
-});
+      }
 
-</script>
 
+      /* Safari / Native HLS */
+
+      if (
+        video.canPlayType(
+          "application/vnd.apple.mpegurl"
+        )
+      ) {
+
+        video.src = url;
+
+        video.play().catch(function(error) {
+
+          console.log(error);
+
+        });
+
+      }
+
+
+      /* Chrome / Android */
+
+      else if (Hls.isSupported()) {
+
+        const hls = new Hls();
+
+        players[id] = hls;
+
+        hls.loadSource(url);
+
+        hls.attachMedia(video);
+
+
+        hls.on(
+          Hls.Events.MANIFEST_PARSED,
+          function() {
+
+            video.play().catch(function(error) {
+
+              console.log(error);
+
+            });
+
+          }
+        );
+
+
+        hls.on(
+          Hls.Events.ERROR,
+          function(event, data) {
+
+            console.log(
+              "HLS Error:",
+              data
+            );
+
+          }
+        );
+
+      }
+
+
+      else {
+
+        alert(
+          "Your browser does not support HLS."
+        );
+
+      }
+
+    }
+
+
+
+    /* ===================================
+       LIKE SYSTEM
+    =================================== */
+
+    function loadLikes() {
+
+      for (let i = 1; i <= 4; i++) {
+
+        let count =
+          localStorage.getItem(
+            "tvLikeCount" + i
+          );
+
+        let liked =
+          localStorage.getItem(
+            "tvLiked" + i
+          );
+
+
+        if (!count) {
+          count = 0;
+        }
+
+
+        document.getElementById(
+          "likeCount" + i
+        ).textContent = count;
+
+
+        if (liked === "true") {
+
+          document.getElementById(
+            "likeButton" + i
+          ).classList.add("liked");
+
+        }
+
+      }
+
+    }
+
+
+
+    function likeTV(id) {
+
+      let count = parseInt(
+        localStorage.getItem(
+          "tvLikeCount" + id
+        ) || 0
+      );
+
+
+      let liked =
+        localStorage.getItem(
+          "tvLiked" + id
+        ) === "true";
+
+
+      if (!liked) {
+
+        count++;
+
+        localStorage.setItem(
+          "tvLikeCount" + id,
+          count
+        );
+
+        localStorage.setItem(
+          "tvLiked" + id,
+          "true"
+        );
+
+      }
+
+
+      document.getElementById(
+        "likeCount" + id
+      ).textContent = count;
+
+
+      document.getElementById(
+        "likeButton" + id
+      ).classList.add("liked");
+
+    }
+
+
+
+    /* ===================================
+       SEARCH
+    =================================== */
+
+    function searchTV() {
+
+      const search =
+        document.getElementById(
+          "searchInput"
+        ).value
+        .toLowerCase()
+        .trim();
+
+
+      const posts =
+        document.querySelectorAll(
+          ".tv-post"
+        );
+
+
+      let found = 0;
+
+
+      posts.forEach(function(post) {
+
+        const name =
+          post.dataset.name
+          .toLowerCase();
+
+
+        if (
+          name.includes(search)
+        ) {
+
+          post.style.display = "block";
+
+          found++;
+
+        }
+
+        else {
+
+          post.style.display = "none";
+
+        }
+
+      });
+
+
+      const noResults =
+        document.getElementById(
+          "noResults"
+        );
+
+
+      if (found === 0) {
+
+        noResults.style.display =
+          "block";
+
+      }
+
+      else {
+
+        noResults.style.display =
+          "none";
+
+      }
+
+    }
+
+
+
+    /* Load likes when page opens */
+
+    loadLikes();
+
+  </script>
 
 </body>
 </html>
