@@ -1,0 +1,381 @@
+/* =========================================
+   RESET
+========================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    background: #000000;
+    color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* =========================================
+   TOP NAVIGATION
+========================================= */
+
+.navbar {
+    width: 100%;
+    height: 95px;
+
+    background: #08b890;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-bottom: 2px solid #087e68;
+}
+
+.navbar nav {
+    width: 100%;
+    max-width: 900px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+
+/* Menu items */
+
+.nav-item {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    color: #ffffff;
+    text-decoration: none;
+
+    font-size: 18px;
+    font-weight: bold;
+
+    padding: 30px 10px 25px;
+
+    transition: 0.2s ease;
+}
+
+.nav-item:hover {
+    opacity: 0.8;
+}
+
+
+/* Icons */
+
+.nav-item .icon {
+    font-size: 25px;
+}
+
+
+/* Active menu */
+
+.nav-item.active::after {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 10px;
+
+    height: 4px;
+
+    background: #ffffff;
+
+    border-radius: 10px;
+}
+
+
+/* =========================================
+   MAIN CONTENT
+========================================= */
+
+.main-content {
+    width: 100%;
+    max-width: 900px;
+
+    margin: 0 auto;
+
+    padding: 45px 25px 120px;
+}
+
+
+/* =========================================
+   PAGE TITLE
+========================================= */
+
+.page-title {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 45px;
+}
+
+.page-title h1 {
+    color: #ffffff;
+
+    font-size: 28px;
+    font-weight: 700;
+
+    letter-spacing: 0.5px;
+}
+
+
+/* =========================================
+   LIVE BADGE
+========================================= */
+
+.live-badge {
+    background: #ff1830;
+
+    color: #ffffff;
+
+    padding: 10px 20px;
+
+    border-radius: 14px;
+
+    font-size: 22px;
+    font-weight: bold;
+
+    line-height: 1;
+}
+
+
+/* =========================================
+   LIVE SECTION
+========================================= */
+
+.live-section {
+    width: 100%;
+}
+
+
+/* =========================================
+   VIDEO BOX
+========================================= */
+
+.video-box {
+    position: relative;
+
+    width: 100%;
+
+    aspect-ratio: 16 / 9;
+
+    background: #020b14;
+
+    border: 3px solid #08b890;
+
+    border-radius: 15px;
+
+    overflow: hidden;
+
+    box-shadow: 0 0 12px rgba(8, 184, 144, 0.25);
+}
+
+
+/* =========================================
+   LIVELAND IFRAME
+========================================= */
+
+.video-box iframe {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    border: none;
+
+    display: block;
+
+    background: #000000;
+}
+
+
+/* =========================================
+   LIVE LABEL
+========================================= */
+
+.video-live-label {
+    position: absolute;
+
+    top: 18px;
+    left: 18px;
+
+    z-index: 10;
+
+    background: #ff1830;
+
+    color: #ffffff;
+
+    padding: 7px 12px;
+
+    border-radius: 7px;
+
+    font-size: 13px;
+    font-weight: bold;
+
+    pointer-events: none;
+}
+
+
+/* =========================================
+   FOOTER
+========================================= */
+
+.footer {
+    width: 100%;
+
+    min-height: 120px;
+
+    background: #000000;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+}
+
+
+/* Footer title */
+
+.footer h2 {
+    color: rgba(255, 255, 255, 0.28);
+
+    font-size: 38px;
+
+    font-weight: bold;
+
+    letter-spacing: 1px;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+    /* Navigation */
+
+    .navbar {
+        height: 95px;
+    }
+
+    .navbar nav {
+        padding: 0 4px;
+    }
+
+
+    /* Mobile menu */
+
+    .nav-item {
+        flex-direction: column;
+
+        gap: 4px;
+
+        font-size: 12px;
+
+        padding: 18px 4px 22px;
+    }
+
+
+    .nav-item .icon {
+        font-size: 20px;
+    }
+
+
+    .nav-item.active::after {
+        bottom: 8px;
+
+        height: 3px;
+    }
+
+
+    /* Main */
+
+    .main-content {
+        padding: 38px 20px 120px;
+    }
+
+
+    /* Title */
+
+    .page-title {
+        gap: 10px;
+
+        margin-bottom: 35px;
+    }
+
+
+    .page-title h1 {
+        font-size: 22px;
+    }
+
+
+    /* LIVE badge */
+
+    .live-badge {
+        font-size: 17px;
+
+        padding: 10px 17px;
+
+        border-radius: 12px;
+    }
+
+
+    /* Video */
+
+    .video-box {
+        border-width: 3px;
+
+        border-radius: 14px;
+    }
+
+
+    /* Live label */
+
+    .video-live-label {
+        top: 15px;
+        left: 15px;
+
+        font-size: 12px;
+
+        padding: 7px 11px;
+    }
+
+
+    /* Footer */
+
+    .footer {
+        min-height: 110px;
+
+        background: #000000;
+    }
+
+
+    .footer h2 {
+        font-size: 30px;
+
+        color: rgba(255, 255, 255, 0.25);
+    }
+}
