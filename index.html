@@ -1,631 +1,1417 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Live TV</title>
+<title>Live TV</title>
 
-  <!-- HLS Player -->
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
+<style>
 
-    body {
-      background: #000;
-      color: #fff;
-    }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
 
-    /* Header */
+body {
+    background: #000;
+    color: #fff;
+}
+
+/* HEADER */
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+    background: #000;
+    border-bottom: 1px solid #252525;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo {
+    color: #fff;
+    font-size: 22px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.search-box {
+    flex: 1;
+}
+
+.search-box input {
+    width: 100%;
+    background: #171717;
+    color: #fff;
+    border: 1px solid #333;
+    border-radius: 25px;
+    padding: 11px 17px;
+    outline: none;
+    font-size: 15px;
+}
+
+.search-box input::placeholder {
+    color: #888;
+}
+
+/* MAIN */
+
+.container {
+    width: 100%;
+    max-width: 650px;
+    margin: 15px auto;
+    padding: 0 10px;
+}
+
+/* TV CARD */
+
+.tv-post {
+    background: #111;
+    border: 1px solid #252525;
+    border-radius: 10px;
+    margin-bottom: 18px;
+    overflow: hidden;
+}
+
+/* HEADER OF TV */
+
+.tv-header {
+    display: flex;
+    align-items: center;
+    padding: 14px;
+}
+
+.avatar {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border-radius: 50%;
+    background: #222;
+    border: 1px solid #444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: bold;
+    margin-right: 11px;
+}
+
+.tv-name {
+    color: #fff;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.live-status {
+    color: #ff3030;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+/* DESCRIPTION */
+
+.description {
+    color: #bbb;
+    font-size: 14px;
+    padding: 0 15px 12px;
+}
+
+/* VIDEO */
+
+.video-container {
+    width: 100%;
+    background: #000;
+}
+
+video {
+    width: 100%;
+    height: auto;
+    display: block;
+    background: #000;
+    aspect-ratio: 16 / 9;
+}
+
+/* PLAY BUTTON */
+
+.play-button {
+    display: block;
+    width: calc(100% - 30px);
+    margin: 15px;
+    padding: 12px;
+    border-radius: 7px;
+    border: 1px solid #444;
+    background: #222;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.play-button:hover {
+    background: #333;
+}
+
+.play-button.playing {
+    background: #fff;
+    color: #000;
+}
+
+/* ACTIONS */
+
+.actions {
+    border-top: 1px solid #292929;
+    padding: 10px 15px;
+}
+
+.like-button {
+    background: transparent;
+    border: none;
+    color: #aaa;
+    font-size: 15px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.like-button:hover {
+    color: #fff;
+}
+
+.like-button.liked {
+    color: #4d9cff;
+}
+
+.like-count {
+    margin-left: 6px;
+    color: #aaa;
+}
+
+/* SEARCH */
+
+.no-result {
+    display: none;
+    text-align: center;
+    color: #999;
+    padding: 40px 10px;
+    font-size: 16px;
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
     .header {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      height: 65px;
-      background: #000;
-      border-bottom: 1px solid #292929;
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      padding: 0 15px;
+        padding: 10px;
     }
 
     .logo {
-      font-size: 23px;
-      font-weight: bold;
-      color: #fff;
-      white-space: nowrap;
-    }
-
-    /* Search */
-    .search-box {
-      width: 230px;
-    }
-
-    .search-box input {
-      width: 100%;
-      background: #1c1c1c;
-      color: #fff;
-      border: 1px solid #333;
-      outline: none;
-
-      padding: 10px 15px;
-      border-radius: 22px;
-
-      font-size: 14px;
-    }
-
-    .search-box input::placeholder {
-      color: #aaa;
-    }
-
-    /* Main */
-    .container {
-      width: 100%;
-      max-width: 650px;
-      margin: 20px auto;
-      padding: 0 10px;
-    }
-
-    /* TV Post */
-    .post {
-      background: #111;
-      border: 1px solid #292929;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      overflow: hidden;
-    }
-
-    /* TV Header */
-    .post-header {
-      display: flex;
-      align-items: center;
-      padding: 14px;
-    }
-
-    .avatar {
-      width: 45px;
-      height: 45px;
-
-      background: #222;
-      color: #fff;
-
-      border-radius: 50%;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      font-weight: bold;
-      margin-right: 10px;
-    }
-
-    .post-title {
-      font-size: 16px;
-      font-weight: bold;
-      color: #fff;
-    }
-
-    .live {
-      color: #ff3030;
-      font-size: 12px;
-      margin-top: 4px;
-    }
-
-    /* Video */
-    .video-box {
-      width: 100%;
-      background: #000;
-    }
-
-    video {
-      width: 100%;
-      display: block;
-      background: #000;
-      aspect-ratio: 16 / 9;
-    }
-
-    /* Play Button */
-    .play-button {
-      display: block;
-
-      width: calc(100% - 30px);
-      margin: 15px;
-
-      padding: 12px;
-
-      border: 1px solid #444;
-      border-radius: 7px;
-
-      background: #000;
-      color: #fff;
-
-      font-size: 15px;
-      font-weight: bold;
-
-      cursor: pointer;
-    }
-
-    .play-button:hover {
-      background: #222;
-    }
-
-    /* Like Section */
-    .actions {
-      border-top: 1px solid #292929;
-
-      display: flex;
-      align-items: center;
-
-      padding: 10px 15px;
-    }
-
-    .like-button {
-      background: transparent;
-      border: none;
-
-      color: #fff;
-
-      font-size: 15px;
-      font-weight: bold;
-
-      cursor: pointer;
-
-      padding: 7px 12px;
-      border-radius: 6px;
-    }
-
-    .like-button:hover {
-      background: #222;
-    }
-
-    .like-button.liked {
-      color: #1877f2;
-    }
-
-    .like-count {
-      color: #aaa;
-      margin-left: 5px;
-      font-size: 14px;
-    }
-
-    /* No Results */
-    .no-results {
-      display: none;
-
-      text-align: center;
-      padding: 40px 10px;
-
-      color: #aaa;
-      font-size: 16px;
-    }
-
-    /* Bottom space */
-    .footer-space {
-      height: 150px;
-    }
-
-    /* Mobile */
-    @media (max-width: 600px) {
-
-      .header {
-        height: auto;
-        min-height: 65px;
-
-        padding: 10px;
-
-        gap: 10px;
-      }
-
-      .logo {
         font-size: 19px;
-      }
-
-      .search-box {
-        width: 180px;
-      }
-
-      .container {
-        margin-top: 10px;
-      }
     }
-  </style>
+
+    .container {
+        padding: 0 7px;
+        margin-top: 10px;
+    }
+
+    .tv-post {
+        border-radius: 8px;
+    }
+
+}
+
+</style>
 </head>
 
 <body>
 
-  <!-- Header -->
-  <header class="header">
+
+<!-- HEADER -->
+
+<header class="header">
 
     <div class="logo">
-      Live TV
+        Live TV
     </div>
 
     <div class="search-box">
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="Search TV..."
-        oninput="searchTV()"
-      >
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search TV..."
+            oninput="searchTV()"
+        >
+
     </div>
 
-  </header>
+</header>
 
 
-  <!-- Main -->
-  <main class="container">
+<main class="container">
 
-    <!-- ========================= -->
-    <!-- ARIANA TV -->
-    <!-- ========================= -->
 
-    <div class="post tv-post" data-name="Ariana TV">
+<!-- ==================================================
+     1. ARIANA TV
+================================================== -->
 
-      <div class="post-header">
+<div class="tv-post" data-name="Ariana TV">
 
-        <div class="avatar">
-          AT
-        </div>
+    <div class="tv-header">
+
+        <div class="avatar">AT</div>
 
         <div>
-          <div class="post-title">
-            Ariana TV
-          </div>
-
-          <div class="live">
-            🔴 LIVE
-          </div>
+            <div class="tv-name">Ariana TV</div>
+            <div class="live-status">🔴 LIVE</div>
         </div>
 
-      </div>
+    </div>
 
+    <div class="description">
+        Watch Ariana TV live.
+    </div>
 
-      <div class="video-box">
+    <div class="video-container">
 
         <video
-          id="video1"
-          controls
-          playsinline
-          preload="none">
+            id="video1"
+            controls
+            playsinline
+            preload="none">
         </video>
 
-      </div>
+    </div>
 
-
-      <button
+    <button
         class="play-button"
-        onclick="playTV(1, 'https://tgn.bozztv.com/eshgtv-dvrfl05/gin-ariana/index.m3u8')">
-
+        id="button1"
+        onclick="playTV(1)">
         ▶ Play Ariana TV
+    </button>
 
-      </button>
-
-
-      <div class="actions">
+    <div class="actions">
 
         <button
-          class="like-button"
-          id="likeButton1"
-          onclick="likeTV(1)">
+            class="like-button"
+            onclick="likeTV(1)">
 
-          👍 Like
+            👍 Like
+
+            <span
+                class="like-count"
+                id="likes1">0</span>
 
         </button>
 
-        <span
-          class="like-count"
-          id="likeCount1">
+    </div>
 
-          0
+</div>
 
-        </span>
 
-      </div>
+<!-- ==================================================
+     2. ARIANA NEWS
+================================================== -->
+
+<div class="tv-post" data-name="Ariana NEWS">
+
+    <div class="tv-header">
+        <div class="avatar">AN</div>
+
+        <div>
+            <div class="tv-name">Ariana NEWS</div>
+            <div class="live-status">🔴 LIVE</div>
+        </div>
+    </div>
+
+    <div class="description">
+        ATN News live.
+    </div>
+
+    <div class="video-container">
+
+        <video
+            id="video2"
+            controls
+            playsinline
+            preload="none">
+        </video>
 
     </div>
 
-
-
-    <!-- ========================= -->
-    <!-- ARIANA NEWS -->
-    <!-- ========================= -->
-
-    <div class="post tv-post" data-name="Ariana News ATN News">
-
-      <div class="post-header">
-
-        <div class="avatar">
-          AN
-        </div>
-
-        <div>
-          <div class="post-title">
-            Ariana NEWS
-          </div>
-
-          <div class="live">
-            🔴 LIVE
-          </div>
-        </div>
-
-      </div>
-
-
-      <div class="video-box">
-
-        <video
-          id="video2"
-          controls
-          playsinline
-          preload="none">
-        </video>
-
-      </div>
-
-
-      <button
+    <button
         class="play-button"
-        onclick="playTV(2, 'https://eshgh.tv/channel.php?cid=882')">
-
+        id="button2"
+        onclick="playTV(2)">
         ▶ Play Ariana NEWS
+    </button>
 
-      </button>
-
-
-      <div class="actions">
+    <div class="actions">
 
         <button
-          class="like-button"
-          id="likeButton2"
-          onclick="likeTV(2)">
+            class="like-button"
+            onclick="likeTV(2)">
 
-          👍 Like
+            👍 Like
+            <span class="like-count" id="likes2">0</span>
 
         </button>
 
-        <span
-          class="like-count"
-          id="likeCount2">
+    </div>
 
-          0
+</div>
 
-        </span>
 
-      </div>
+<!-- ==================================================
+     3. TOLO TV
+================================================== -->
+
+<div class="tv-post" data-name="TOLO TV">
+
+    <div class="tv-header">
+        <div class="avatar">TT</div>
+
+        <div>
+            <div class="tv-name">TOLO TV</div>
+            <div class="live-status">🔴 LIVE</div>
+        </div>
+    </div>
+
+    <div class="description">
+        Tolo HD live.
+    </div>
+
+    <div class="video-container">
+
+        <video
+            id="video3"
+            controls
+            playsinline
+            preload="none">
+        </video>
 
     </div>
 
-
-
-    <!-- ========================= -->
-    <!-- TOLO TV -->
-    <!-- ========================= -->
-
-    <div class="post tv-post" data-name="Tolo TV Tolo HD">
-
-      <div class="post-header">
-
-        <div class="avatar">
-          TT
-        </div>
-
-        <div>
-          <div class="post-title">
-            TOLO TV
-          </div>
-
-          <div class="live">
-            🔴 LIVE
-          </div>
-        </div>
-
-      </div>
-
-
-      <div class="video-box">
-
-        <video
-          id="video3"
-          controls
-          playsinline
-          preload="none">
-        </video>
-
-      </div>
-
-
-      <button
+    <button
         class="play-button"
-        onclick="playTV(3, 'https://eshgh.tv/channel.php?cid=887')">
-
+        id="button3"
+        onclick="playTV(3)">
         ▶ Play TOLO TV
+    </button>
 
-      </button>
-
-
-      <div class="actions">
+    <div class="actions">
 
         <button
-          class="like-button"
-          id="likeButton3"
-          onclick="likeTV(3)">
+            class="like-button"
+            onclick="likeTV(3)">
 
-          👍 Like
+            👍 Like
+            <span class="like-count" id="likes3">0</span>
 
         </button>
 
-        <span
-          class="like-count"
-          id="likeCount3">
-
-          0
-
-        </span>
-
-      </div>
-
     </div>
 
+</div>
 
 
-    <!-- ========================= -->
-    <!-- TOLO NEWS -->
-    <!-- ========================= -->
+<!-- ==================================================
+     4. TOLO NEWS
+================================================== -->
 
-    <div class="post tv-post" data-name="Tolo News">
+<div class="tv-post" data-name="Tolo NEWS">
 
-      <div class="post-header">
-
-        <div class="avatar">
-          TN
-        </div>
+    <div class="tv-header">
+        <div class="avatar">TN</div>
 
         <div>
-          <div class="post-title">
-            Tolo NEWS
-          </div>
-
-          <div class="live">
-            🔴 LIVE
-          </div>
+            <div class="tv-name">Tolo NEWS</div>
+            <div class="live-status">🔴 LIVE</div>
         </div>
+    </div>
 
-      </div>
+    <div class="description">
+        Tolo News live.
+    </div>
 
-
-      <div class="video-box">
+    <div class="video-container">
 
         <video
-          id="video4"
-          controls
-          playsinline
-          preload="none">
+            id="video4"
+            controls
+            playsinline
+            preload="none">
         </video>
 
-      </div>
+    </div>
 
-
-      <button
+    <button
         class="play-button"
-        onclick="playTV(4, 'https://share.google/Uq1N0NPWQveyuWwLA')">
-
+        id="button4"
+        onclick="playTV(4)">
         ▶ Play Tolo NEWS
+    </button>
 
-      </button>
-
-
-      <div class="actions">
+    <div class="actions">
 
         <button
-          class="like-button"
-          id="likeButton4"
-          onclick="likeTV(4)">
+            class="like-button"
+            onclick="likeTV(4)">
 
-          👍 Like
+            👍 Like
+            <span class="like-count" id="likes4">0</span>
 
         </button>
 
-        <span
-          class="like-count"
-          id="likeCount4">
+    </div>
 
-          0
+</div>
 
-        </span>
 
-      </div>
+<!-- ==================================================
+     5. AF SPORTS
+================================================== -->
+
+<div class="tv-post" data-name="AF Sports">
+
+    <div class="tv-header">
+        <div class="avatar">AF</div>
+
+        <div>
+            <div class="tv-name">AF Sports</div>
+            <div class="live-status">🔴 LIVE</div>
+        </div>
+    </div>
+
+    <div class="description">
+        AF Sports live.
+    </div>
+
+    <div class="video-container">
+
+        <video
+            id="video5"
+            controls
+            playsinline
+            preload="none">
+        </video>
 
     </div>
 
+    <button
+        class="play-button"
+        id="button5"
+        onclick="playTV(5)">
+        ▶ Play AF Sports
+    </button>
 
-    <!-- No Search Results -->
-    <div
-      class="no-results"
-      id="noResults">
+    <div class="actions">
 
-      No TV channel found.
+        <button
+            class="like-button"
+            onclick="likeTV(5)">
+
+            👍 Like
+            <span class="like-count" id="likes5">0</span>
+
+        </button>
 
     </div>
 
-
-    <div class="footer-space"></div>
-
-  </main>
+</div>
 
 
+<!-- ==================================================
+     6. AREZO
+================================================== -->
 
-  <script>
+<div class="tv-post" data-name="Arezo">
 
-    /* ===================================
-       HLS PLAYERS
-    =================================== */
+    <div class="tv-header">
+        <div class="avatar">AZ</div>
 
-    const players = {};
+        <div>
+            <div class="tv-name">Arezo</div>
+            <div class="live-status">🔴 LIVE</div>
+        </div>
+    </div>
+
+    <div class="description">
+        Arezo TV live.
+    </div>
+
+    <div class="video-container">
+
+        <video
+            id="video6"
+            controls
+            playsinline
+            preload="none">
+        </video>
+
+    </div>
+
+    <button
+        class="play-button"
+        id="button6"
+        onclick="playTV(6)">
+        ▶ Play Arezo
+    </button>
+
+    <div class="actions">
+
+        <button
+            class="like-button"
+            onclick="likeTV(6)">
+
+            👍 Like
+            <span class="like-count" id="likes6">0</span>
+
+        </button>
+
+    </div>
+
+</div>
 
 
-    function playTV(id, url) {
+<!-- ==================================================
+     7. STAR SPORTS 1
+================================================== -->
 
-      const video =
-        document.getElementById("video" + id);
+<div class="tv-post" data-name="Star Sports 1">
+
+    <div class="tv-header">
+        <div class="avatar">S1</div>
+
+        <div>
+            <div class="tv-name">Star Sports 1</div>
+            <div class="live-status">🔴 LIVE</div>
+        </div>
+    </div>
+
+    <div class="description">
+        Star Sports 1 live.
+    </div>
+
+    <div class="video-container">
+
+        <video
+            id="video7"
+            controls
+            playsinline
+            preload="none">
+        </video>
+
+    </div>
+
+    <button
+        class="play-button"
+        id="button7"
+        onclick="playTV(7)">
+        ▶ Play Star Sports 1
+    </button>
+
+    <div class="actions">
+
+        <button
+            class="like-button"
+            onclick="likeTV(7)">
+
+            👍 Like
+            <span class="like-count" id="likes7">0</span>
+
+        </button>
+
+    </div>
+
+</div>
 
 
-      /* Stop other videos */
+<!-- ==================================================
+     8. STAR SPORTS 2
+================================================== -->
 
-      document.querySelectorAll("video").forEach(function(v) {
+<div class="tv-post" data-name="Star Sports 2">
 
-        if (v !== video) {
-          v.pause();
-        }
+    <div class="tv-header">
+        <div class="avatar">S2</div>
 
-      });
+        <div>
+            <div class="tv-name">Star Sports 2</div>
+            <div class="live-status">🔴 LIVE</div>
+        </div>
+    </div>
+
+    <div class="description">
+        Star Sports 2 live.
+    </div>
+
+    <div class="video-container">
+
+        <video
+            id="video8"
+            controls
+            playsinline
+            preload="none">
+        </video>
+
+    </div>
+
+    <button
+        class="play-button"
+        id="button8"
+        onclick="playTV(8)">
+        ▶ Play Star Sports 2
+    </button>
+
+    <div class="actions">
+
+        <button
+            class="like-button"
+            onclick="likeTV(8)">
+
+            👍 Like
+            <span class="like-count" id="likes8">0</span>
+
+        </button>
+
+    </div>
+
+</div>
 
 
-      /* Destroy old HLS player */
+<!-- ==================================================
+     9. STAR SPORTS 2 HINDI
+================================================== -->
 
-      if (players[id]) {
+<div class="tv-post" data-name="Star Sports 2 Hindi">
 
-        players[id].destroy();
+    <div class="tv-header">
+        <div class="avatar">SH</div>
 
-        players[id] = null;
+        <div>
+            <div class="tv-name">Star Sports 2 Hindi</div>
+            <div class="live-status">🔴 LIVE</div>
+        </div>
+    </div>
 
-      }
+    <div class="description">
+        Star Sports 2 Hindi live.
+    </div>
+
+    <div class="video-container">
+
+        <video
+            id="video9"
+            controls
+            playsinline
+            preload="none">
+        </video>
+
+    </div>
+
+    <button
+        class="play-button"
+        id="button9"
+        onclick="playTV(9)">
+        ▶ Play Star Sports 2 Hindi
+    </button>
+
+    <div class="actions">
+
+        <button
+            class="like-button"
+            onclick="likeTV(9)">
+
+            👍 Like
+            <span class="like-count" id="likes9">0</span>
+
+        </button>
+
+    </div>
+
+</div>
 
 
-      /* Safari / Native HLS */
+<!-- ==================================================
+     10. STAR SPORTS SELECT 2
+================================================== -->
 
-      if (
-        video.canPlayType(
-          "application/vnd.apple.mpegurl"
-        )
-      ) {
+<div class="tv-post" data-name="Star Sports Select 2">
 
-        video.src = url;
+    <div class="tv-header">
+        <div class="avatar">SS</div>
 
-        video.play().catch(function(error) {
+        <div>
+            <div class="tv-name">Star Sports Select 2</div>
+            <div class="live-status">🔴 LIVE</div>
+        </div>
+    </div>
 
-          console.log(error);
+    <div class="description">
+        Star Sports Select 2 live.
+    </div>
+
+    <div class="video-container">
+
+        <video
+            id="video10"
+            controls
+            playsinline
+            preload="none">
+        </video>
+
+    </div>
+
+    <button
+        class="play-button"
+        id="button10"
+        onclick="playTV(10)">
+        ▶ Play Star Sports Select 2
+    </button>
+
+    <div class="actions">
+
+        <button
+            class="like-button"
+            onclick="likeTV(10)">
+
+            👍 Like
+            <span class="like-count" id="likes10">0</span>
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     11. GEO NEWS
+================================================== -->
+
+<div class="tv-post" data-name="Geo News">
+
+    <div class="tv-header">
+        <div class="avatar">GN</div>
+
+        <div>
+            <div class="tv-name">Geo News</div>
+            <div class="live-status">🔴 LIVE</div>
+        </div>
+    </div>
+
+    <div class="description">
+        Geo News live.
+    </div>
+
+    <div class="video-container">
+
+        <video
+            id="video11"
+            controls
+            playsinline
+            preload="none">
+        </video>
+
+    </div>
+
+    <button
+        class="play-button"
+        id="button11"
+        onclick="playTV(11)">
+        ▶ Play Geo News
+    </button>
+
+    <div class="actions">
+
+        <button
+            class="like-button"
+            onclick="likeTV(11)">
+
+            👍 Like
+            <span class="like-count" id="likes11">0</span>
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     12. GEO TV
+================================================== -->
+
+<div class="tv-post" data-name="Geo TV">
+
+    <div class="tv-header">
+        <div class="avatar">GT</div>
+
+        <div>
+            <div class="tv-name">Geo TV</div>
+            <div class="live-status">🔴 LIVE</div>
+        </div>
+    </div>
+
+    <div class="description">
+        Geo TV live.
+    </div>
+
+    <div class="video-container">
+
+        <video
+            id="video12"
+            controls
+            playsinline
+            preload="none">
+        </video>
+
+    </div>
+
+    <button
+        class="play-button"
+        id="button12"
+        onclick="playTV(12)">
+        ▶ Play Geo TV
+    </button>
+
+    <div class="actions">
+
+        <button
+            class="like-button"
+            onclick="likeTV(12)">
+
+            👍 Like
+            <span class="like-count" id="likes12">0</span>
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     13. ARY NEWS
+================================================== -->
+
+<div class="tv-post" data-name="ARY News">
+
+    <div class="tv-header">
+        <div class="avatar">AN</div>
+
+        <div>
+            <div class="tv-name">ARY News</div>
+            <div class="live-status">🔴 LIVE</div>
+        </div>
+    </div>
+
+    <div class="description">
+        ARY News live.
+    </div>
+
+    <div class="video-container">
+
+        <video
+            id="video13"
+            controls
+            playsinline
+            preload="none">
+        </video>
+
+    </div>
+
+    <button
+        class="play-button"
+        id="button13"
+        onclick="playTV(13)">
+        ▶ Play ARY News
+    </button>
+
+    <div class="actions">
+
+        <button
+            class="like-button"
+            onclick="likeTV(13)">
+
+            👍 Like
+            <span class="like-count" id="likes13">0</span>
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     14. DUNYA NEWS
+================================================== -->
+
+<div class="tv-post" data-name="Dunya News">
+
+    <div class="tv-header">
+        <div class="avatar">DN</div>
+
+        <div>
+            <div class="tv-name">Dunya News</div>
+            <div class="live-status">🔴 LIVE</div>
+        </div>
+    </div>
+
+    <div class="description">
+        Dunya News live.
+    </div>
+
+    <div class="video-container">
+
+        <video
+            id="video14"
+            controls
+            playsinline
+            preload="none">
+        </video>
+
+    </div>
+
+    <button
+        class="play-button"
+        id="button14"
+        onclick="playTV(14)">
+        ▶ Play Dunya News
+    </button>
+
+    <div class="actions">
+
+        <button
+            class="like-button"
+            onclick="likeTV(14)">
+
+            👍 Like
+            <span class="like-count" id="likes14">0</span>
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     15. SAMAA TV
+================================================== -->
+
+<div class="tv-post" data-name="Samaa TV">
+
+    <div class="tv-header">
+        <div class="avatar">ST</div>
+
+        <div>
+            <div class="tv-name">Samaa TV</div>
+            <div class="live-status">🔴 LIVE</div>
+        </div>
+    </div>
+
+    <div class="description">
+        Samaa TV live.
+    </div>
+
+    <div class="video-container">
+
+        <video
+            id="video15"
+            controls
+            playsinline
+            preload="none">
+        </video>
+
+    </div>
+
+    <button
+        class="play-button"
+        id="button15"
+        onclick="playTV(15)">
+        ▶ Play Samaa TV
+    </button>
+
+    <div class="actions">
+
+        <button
+            class="like-button"
+            onclick="likeTV(15)">
+
+            👍 Like
+            <span class="like-count" id="likes15">0</span>
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     16. HUM TV
+================================================== -->
+
+<div class="tv-post" data-name="HUM TV">
+
+    <div class="tv-header">
+        <div class="avatar">HT</div>
+
+        <div>
+            <div class="tv-name">HUM TV</div>
+            <div class="live-status">🔴 LIVE</div>
+        </div>
+    </div>
+
+    <div class="description">
+        HUM TV live.
+    </div>
+
+    <div class="video-container">
+
+        <video
+            id="video16"
+            controls
+            playsinline
+            preload="none">
+        </video>
+
+    </div>
+
+    <button
+        class="play-button"
+        id="button16"
+        onclick="playTV(16)">
+        ▶ Play HUM TV
+    </button>
+
+    <div class="actions">
+
+        <button
+            class="like-button"
+            onclick="likeTV(16)">
+
+            👍 Like
+            <span class="like-count" id="likes16">0</span>
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     17. ARY DIGITAL
+================================================== -->
+
+<div class="tv-post" data-name="ARY Digital">
+
+    <div class="tv-header">
+        <div class="avatar">AD</div>
+
+        <div>
+            <div class="tv-name">ARY Digital</div>
+            <div class="live-status">🔴 LIVE</div>
+        </div>
+    </div>
+
+    <div class="description">
+        ARY Digital live.
+    </div>
+
+    <div class="video-container">
+
+        <video
+            id="video17"
+            controls
+            playsinline
+            preload="none">
+        </video>
+
+    </div>
+
+    <button
+        class="play-button"
+        id="button17"
+        onclick="playTV(17)">
+        ▶ Play ARY Digital
+    </button>
+
+    <div class="actions">
+
+        <button
+            class="like-button"
+            onclick="likeTV(17)">
+
+            👍 Like
+            <span class="like-count" id="likes17">0</span>
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     18. PTV SPORTS
+================================================== -->
+
+<div class="tv-post" data-name="PTV Sports">
+
+    <div class="tv-header">
+        <div class="avatar">PS</div>
+
+        <div>
+            <div class="tv-name">PTV Sports</div>
+            <div class="live-status">🔴 LIVE</div>
+        </div>
+    </div>
+
+    <div class="description">
+        PTV Sports live.
+    </div>
+
+    <div class="video-container">
+
+        <video
+            id="video18"
+            controls
+            playsinline
+            preload="none">
+        </video>
+
+    </div>
+
+    <button
+        class="play-button"
+        id="button18"
+        onclick="playTV(18)">
+        ▶ Play PTV Sports
+    </button>
+
+    <div class="actions">
+
+        <button
+            class="like-button"
+            onclick="likeTV(18)">
+
+            👍 Like
+            <span class="like-count" id="likes18">0</span>
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- NO RESULT -->
+
+<div
+    id="noResult"
+    class="no-result">
+
+    No TV channel found.
+
+</div>
+
+
+</main>
+
+
+<script>
+
+/* ==================================================
+   STREAM LINKS
+================================================== */
+
+const streams = {
+
+    1:
+    "https://tgn.bozztv.com/eshgtv-dvrfl05/gin-ariana/index.m3u8",
+
+    2:
+    "https://d10rltuy0iweup.cloudfront.net/ATNNEWS/myStream/chunklist_w243275157.m3u8",
+
+    3:
+    "https://tgn.bozztv.com/eshgtv-dvrfl05/gin-tolohd/tracks-v1a1/mono.m3u8",
+
+    4:
+    "https://tgn.bozztv.com/eshgtv-dvrfl05/gin-tolonews/index.m3u8",
+
+    5:
+    "https://www.darya.net/#!/item/KUtERfTw3tkzQphPrfAj2A/1",
+
+    6:
+    "https://d10rltuy0iweup.cloudfront.net/ATNNAT/myStream/chunklist_w1687258971.m3u8",
+
+    7:
+    "http://tvsen5.aynascope.net/cXPB2LKkErN9/index.m3u8",
+
+    8:
+    "http://tvsen7.aynascope.net/ssport2hd/index.m3u8",
+
+    9:
+    "https://tvsen5.aynaott.com/cXPB2LKkErN9/index.m3u8",
+
+    10:
+    "http://tvsen7.aynascope.net/ssport2hd/index.m3u8",
+
+    11:
+    "https://live.geo.tv/geonews/playlist.m3u8",
+
+    12:
+    "https://live.geo.tv/geotv/playlist.m3u8",
+
+    13:
+    "https://live.arydigital.tv/arynews/playlist.m3u8",
+
+    14:
+    "https://cdn.playtv.com.pk/dunyanews/live/playlist.m3u8",
+
+    15:
+    "https://cdn.playtv.com.pk/samaatv/live/playlist.m3u8",
+
+    16:
+    "https://cdn.playtv.com.pk/humtv/live/playlist.m3u8",
+
+    17:
+    "https://live.arydigital.tv/arydigital/playlist.m3u8",
+
+    18:
+    "http://tvsen5.aynascope.net/Ptvsports/index.m3u8"
+
+};
+
+
+/* ==================================================
+   HLS PLAYERS
+================================================== */
+
+const players = {};
+
+
+/* ==================================================
+   PLAY TV
+================================================== */
+
+function playTV(id) {
+
+    const video =
+        document.getElementById(
+            "video" + id
+        );
+
+    const button =
+        document.getElementById(
+            "button" + id
+        );
+
+    const url =
+        streams[id];
+
+
+    if (!url) {
+
+        alert("Stream is not available.");
+
+        return;
+
+    }
+
+
+    /* Stop all other videos */
+
+    document
+        .querySelectorAll("video")
+        .forEach(function(v) {
+
+            if (v !== video) {
+
+                v.pause();
+
+            }
 
         });
 
-      }
+
+    /* Reset buttons */
+
+    document
+        .querySelectorAll(".play-button")
+        .forEach(function(btn) {
+
+            btn.classList.remove(
+                "playing"
+            );
+
+        });
 
 
-      /* Chrome / Android */
+    button.classList.add(
+        "playing"
+    );
 
-      else if (Hls.isSupported()) {
 
-        const hls = new Hls();
+    /* Native HLS */
+
+    if (
+        video.canPlayType(
+            "application/vnd.apple.mpegurl"
+        )
+    ) {
+
+        video.src = url;
+
+        video.play().catch(
+            function() {
+
+                console.log(
+                    "Playback requires user interaction."
+                );
+
+            }
+        );
+
+        return;
+
+    }
+
+
+    /* HLS.js */
+
+    if (Hls.isSupported()) {
+
+        if (players[id]) {
+
+            players[id].destroy();
+
+        }
+
+
+        const hls =
+            new Hls({
+
+                enableWorker: true,
+
+                lowLatencyMode: true
+
+            });
+
 
         players[id] = hls;
+
 
         hls.loadSource(url);
 
@@ -633,212 +1419,273 @@
 
 
         hls.on(
-          Hls.Events.MANIFEST_PARSED,
-          function() {
+            Hls.Events.MANIFEST_PARSED,
+            function() {
 
-            video.play().catch(function(error) {
+                video.play().catch(
+                    function() {
 
-              console.log(error);
+                        console.log(
+                            "Playback error."
+                        );
 
-            });
+                    }
+                );
 
-          }
+            }
         );
 
 
         hls.on(
-          Hls.Events.ERROR,
-          function(event, data) {
+            Hls.Events.ERROR,
+            function(
+                event,
+                data
+            ) {
 
-            console.log(
-              "HLS Error:",
-              data
-            );
+                console.log(
+                    "HLS Error:",
+                    data
+                );
 
-          }
+            }
         );
 
-      }
+    }
 
-
-      else {
+    else {
 
         alert(
-          "Your browser does not support HLS."
+            "Your browser does not support HLS."
         );
 
-      }
-
     }
 
+}
 
 
-    /* ===================================
-       LIKE SYSTEM
-    =================================== */
+/* ==================================================
+   LIKE SYSTEM
+================================================== */
 
-    function loadLikes() {
+function likeTV(id) {
 
-      for (let i = 1; i <= 4; i++) {
-
-        let count =
-          localStorage.getItem(
-            "tvLikeCount" + i
-          );
-
-        let liked =
-          localStorage.getItem(
-            "tvLiked" + i
-          );
-
-
-        if (!count) {
-          count = 0;
-        }
-
-
+    const countElement =
         document.getElementById(
-          "likeCount" + i
-        ).textContent = count;
+            "likes" + id
+        );
+
+    const button =
+        countElement.parentElement;
 
 
-        if (liked === "true") {
-
-          document.getElementById(
-            "likeButton" + i
-          ).classList.add("liked");
-
-        }
-
-      }
-
-    }
+    let count =
+        parseInt(
+            localStorage.getItem(
+                "likes_" + id
+            ) || "0"
+        );
 
 
-
-    function likeTV(id) {
-
-      let count = parseInt(
+    let liked =
         localStorage.getItem(
-          "tvLikeCount" + id
-        ) || 0
-      );
-
-
-      let liked =
-        localStorage.getItem(
-          "tvLiked" + id
+            "liked_" + id
         ) === "true";
 
 
-      if (!liked) {
+    if (!liked) {
 
         count++;
 
-        localStorage.setItem(
-          "tvLikeCount" + id,
-          count
-        );
+        liked = true;
 
-        localStorage.setItem(
-          "tvLiked" + id,
-          "true"
-        );
+    }
 
-      }
+    else {
 
+        count--;
 
-      document.getElementById(
-        "likeCount" + id
-      ).textContent = count;
-
-
-      document.getElementById(
-        "likeButton" + id
-      ).classList.add("liked");
+        liked = false;
 
     }
 
 
+    localStorage.setItem(
+        "likes_" + id,
+        count
+    );
 
-    /* ===================================
-       SEARCH
-    =================================== */
 
-    function searchTV() {
+    localStorage.setItem(
+        "liked_" + id,
+        liked
+    );
 
-      const search =
+
+    countElement.textContent =
+        count;
+
+
+    if (liked) {
+
+        button.classList.add(
+            "liked"
+        );
+
+    }
+
+    else {
+
+        button.classList.remove(
+            "liked"
+        );
+
+    }
+
+}
+
+
+/* ==================================================
+   LOAD LIKES
+================================================== */
+
+function loadLikes() {
+
+    for (
+        let i = 1;
+        i <= 18;
+        i++
+    ) {
+
+        const count =
+            localStorage.getItem(
+                "likes_" + i
+            ) || "0";
+
+
+        const liked =
+            localStorage.getItem(
+                "liked_" + i
+            ) === "true";
+
+
+        const countElement =
+            document.getElementById(
+                "likes" + i
+            );
+
+
+        if (countElement) {
+
+            countElement.textContent =
+                count;
+
+        }
+
+
+        if (liked && countElement) {
+
+            countElement
+                .parentElement
+                .classList
+                .add("liked");
+
+        }
+
+    }
+
+}
+
+
+/* ==================================================
+   SEARCH TV
+================================================== */
+
+function searchTV() {
+
+    const input =
         document.getElementById(
-          "searchInput"
-        ).value
+            "searchInput"
+        );
+
+
+    const search =
+        input.value
         .toLowerCase()
         .trim();
 
 
-      const posts =
+    const channels =
         document.querySelectorAll(
-          ".tv-post"
+            ".tv-post"
         );
 
 
-      let found = 0;
+    let found = false;
 
 
-      posts.forEach(function(post) {
+    channels.forEach(
+        function(channel) {
 
-        const name =
-          post.dataset.name
-          .toLowerCase();
+            const name =
+                channel
+                .dataset
+                .name
+                .toLowerCase();
 
 
-        if (
-          name.includes(search)
-        ) {
+            if (
+                name.includes(search)
+            ) {
 
-          post.style.display = "block";
+                channel.style.display =
+                    "block";
 
-          found++;
+                found = true;
+
+            }
+
+            else {
+
+                channel.style.display =
+                    "none";
+
+            }
 
         }
-
-        else {
-
-          post.style.display = "none";
-
-        }
-
-      });
+    );
 
 
-      const noResults =
+    const noResult =
         document.getElementById(
-          "noResults"
+            "noResult"
         );
 
 
-      if (found === 0) {
+    if (!found) {
 
-        noResults.style.display =
-          "block";
-
-      }
-
-      else {
-
-        noResults.style.display =
-          "none";
-
-      }
+        noResult.style.display =
+            "block";
 
     }
 
+    else {
+
+        noResult.style.display =
+            "none";
+
+    }
+
+}
 
 
-    /* Load likes when page opens */
+/* ==================================================
+   INITIALIZE
+================================================== */
 
-    loadLikes();
+loadLikes();
 
-  </script>
+</script>
 
 </body>
 </html>
