@@ -1,110 +1,491 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>WADAN NEWS</title>
+<title>Afghanistan Live TV</title>
 
-    <link rel="stylesheet" href="style.css">
+<style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background: #000;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    overflow-x: hidden;
+}
+
+/* HEADER */
+
+.header {
+    height: 60px;
+    background: #080808;
+    border-bottom: 1px solid #222;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 15px;
+
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+.logo {
+    font-size: 21px;
+    font-weight: bold;
+}
+
+.live-status {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    font-size: 13px;
+}
+
+.live-dot {
+    width: 9px;
+    height: 9px;
+
+    background: red;
+    border-radius: 50%;
+
+    box-shadow: 0 0 8px red;
+}
+
+/* FEED */
+
+.feed {
+    width: 100%;
+    max-width: 700px;
+    margin: auto;
+}
+
+/* TV CARD */
+
+.tv-card {
+    background: #050505;
+    border-bottom: 8px solid #111;
+    padding-bottom: 18px;
+}
+
+/* CHANNEL NAME */
+
+.channel-name {
+    direction: ltr;
+    text-align: left;
+
+    padding: 15px 14px 10px;
+
+    font-size: 20px;
+    font-weight: 900;
+}
+
+/* VIDEO BOX */
+
+.video-box {
+    position: relative;
+
+    width: 100%;
+    aspect-ratio: 16 / 9;
+
+    background: #111;
+
+    overflow: hidden;
+}
+
+/* VIDEO */
+
+.video-box video {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    background: #000;
+
+    object-fit: contain;
+}
+
+/* PLAY SCREEN */
+
+.play-screen {
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            rgba(0,0,0,.35),
+            rgba(0,0,0,.55)
+        );
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 5;
+
+    cursor: pointer;
+}
+
+/* PLAY BUTTON */
+
+.play-button {
+    width: 75px;
+    height: 75px;
+
+    border-radius: 50%;
+
+    border: none;
+
+    background: #e50914;
+
+    color: white;
+
+    font-size: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding-left: 5px;
+
+    cursor: pointer;
+
+    box-shadow: 0 5px 25px rgba(0,0,0,.7);
+
+    transition: .2s;
+}
+
+.play-button:hover {
+    transform: scale(1.08);
+}
+
+/* LIVE LABEL */
+
+.live-label {
+    position: absolute;
+
+    top: 10px;
+    left: 10px;
+
+    z-index: 10;
+
+    background: #e50914;
+
+    color: white;
+
+    padding: 5px 9px;
+
+    border-radius: 4px;
+
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* DESCRIPTION */
+
+.description {
+    direction: ltr;
+    text-align: left;
+
+    padding: 10px 14px 0;
+
+    color: #aaa;
+
+    font-size: 13px;
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+    .header {
+        height: 56px;
+    }
+
+    .logo {
+        font-size: 18px;
+    }
+
+    .channel-name {
+        font-size: 18px;
+        padding: 13px 12px 9px;
+    }
+
+    .play-button {
+        width: 65px;
+        height: 65px;
+        font-size: 26px;
+    }
+
+}
+
+</style>
 </head>
 
 <body>
 
-    <!-- =========================
-         TOP NAVIGATION
-    ========================== -->
 
-    <header class="navbar">
+<!-- HEADER -->
 
-        <nav>
+<header class="header">
 
-            <a href="#" class="nav-item active">
-                <span class="icon">⌂</span>
-                <span>Home</span>
-            </a>
+    <div class="logo">
+        LIVE TV
+    </div>
 
-            <a href="#" class="nav-item">
-                <span class="icon">▣</span>
-                <span>Live Matches</span>
-            </a>
+    <div class="live-status">
 
-            <a href="#" class="nav-item">
-                <span class="icon">▦</span>
-                <span>Schedule</span>
-            </a>
+        <span class="live-dot"></span>
 
-            <a href="#" class="nav-item">
-                <span class="icon">♟</span>
-                <span>Teams</span>
-            </a>
+        LIVE
 
-            <a href="#" class="nav-item">
-                <span class="icon">▤</span>
-                <span>News</span>
-            </a>
+    </div>
 
-        </nav>
-
-    </header>
+</header>
 
 
-    <!-- =========================
-         MAIN CONTENT
-    ========================== -->
 
-    <main class="main-content">
+<main class="feed">
 
-        <div class="page-title">
 
-            <span class="live-badge">
-                LIVE
-            </span>
+<!-- ================================================= -->
+<!-- AF SPORTS -->
+<!-- ================================================= -->
 
-            <h1>
-                WADAN NEWS
-            </h1>
+<section class="tv-card">
+
+    <h2 class="channel-name">
+        AF SPORTS
+    </h2>
+
+    <div class="video-box">
+
+        <span class="live-label">
+            LIVE
+        </span>
+
+        <video
+            controls
+            playsinline
+            preload="none"
+            poster=""
+        ></video>
+
+        <div class="play-screen">
+
+            <button class="play-button">
+                ▶
+            </button>
 
         </div>
 
+    </div>
 
-        <!-- =========================
-             LIVE VIDEO
-        ========================== -->
+    <div class="description">
+        AF SPORTS • LIVE TV
+    </div>
 
-        <section class="live-section">
-
-            <div class="video-box">
-
-                <div class="video-live-label">
-                    LIVE
-                </div>
-
-                <iframe
-                    src="https://liveland.af/channels/af-sports"
-                    title="AF Sports Live"
-                    allow="autoplay; fullscreen; picture-in-picture"
-                    allowfullscreen>
-                </iframe>
-
-            </div>
-
-        </section>
-
-    </main>
+</section>
 
 
-    <!-- =========================
-         FOOTER
-    ========================== -->
 
-    <footer class="footer">
+<!-- ================================================= -->
+<!-- TOLO NEWS -->
+<!-- ================================================= -->
 
-        <h2>
-            WADAN NEWS
-        </h2>
+<section class="tv-card">
 
-    </footer>
+    <h2 class="channel-name">
+        TOLO NEWS
+    </h2>
+
+    <div class="video-box">
+
+        <span class="live-label">
+            LIVE
+        </span>
+
+        <video
+            controls
+            playsinline
+            preload="none"
+        ></video>
+
+        <div class="play-screen">
+
+            <button class="play-button">
+                ▶
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="description">
+        TOLO NEWS • LIVE TV
+    </div>
+
+</section>
+
+
+
+<!-- ================================================= -->
+<!-- TOLO TV -->
+<!-- ================================================= -->
+
+<section class="tv-card">
+
+    <h2 class="channel-name">
+        TOLO TV
+    </h2>
+
+    <div class="video-box">
+
+        <span class="live-label">
+            LIVE
+        </span>
+
+        <video
+            controls
+            playsinline
+            preload="none"
+        ></video>
+
+        <div class="play-screen">
+
+            <button class="play-button">
+                ▶
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="description">
+        TOLO TV • LIVE TV
+    </div>
+
+</section>
+
+
+
+<!-- ================================================= -->
+<!-- LEMAR TV -->
+<!-- ================================================= -->
+
+<section class="tv-card">
+
+    <h2 class="channel-name">
+        LEMAR TV
+    </h2>
+
+    <div class="video-box">
+
+        <span class="live-label">
+            LIVE
+        </span>
+
+        <video
+            controls
+            playsinline
+            preload="none"
+        ></video>
+
+        <div class="play-screen">
+
+            <button class="play-button">
+                ▶
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="description">
+        LEMAR TV • LIVE TV
+    </div>
+
+</section>
+
+
+</main>
+
+
+
+<script>
+
+/*
+====================================================
+هر تلویزیون جداگانه Play می‌شود
+====================================================
+*/
+
+const tvBoxes = document.querySelectorAll(".video-box");
+
+
+tvBoxes.forEach(function(box) {
+
+    const video = box.querySelector("video");
+    const playScreen = box.querySelector(".play-screen");
+    const playButton = box.querySelector(".play-button");
+
+
+    playScreen.addEventListener("click", function() {
+
+        /*
+        فقط همین تلویزیون Play می‌شود
+        */
+
+        video.play();
+
+        playScreen.style.display = "none";
+
+    });
+
+
+    /*
+    وقتی ویدیو متوقف شد،
+    دکمه Play دوباره ظاهر می‌شود.
+    */
+
+    video.addEventListener("pause", function() {
+
+        playScreen.style.display = "flex";
+
+    });
+
+
+    /*
+    وقتی Play شد،
+    صفحه Play مخفی می‌شود.
+    */
+
+    video.addEventListener("play", function() {
+
+        playScreen.style.display = "none";
+
+    });
+
+});
+
+</script>
+
 
 </body>
 </html>
